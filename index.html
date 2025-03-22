@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Counting Helper</title>
+  <style>
+    body {
+      background-color: black;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 0px;
+      margin: 0;
+      /* 移除默认边距 */
+      height: 100vh;
+      /* 确保body占满视口 */
+      display: flex;
+      flex-direction: column;
+    }
+
+    #counter {
+      margin-left: auto;
+      margin-right: auto;
+      max-width: 400px;
+      color: white;
+      font-size: 80vw;
+      margin-top: 12vh;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    #btns {
+      margin-top: 10vh;
+      display: flex;
+      gap: 10vw;
+      justify-content: center;
+    }
+
+    button {
+      appearance: none;
+      /* 移除默认样式 */
+      background-color: transparent;
+      /* 背景透明 */
+      border: none;
+      /* 移除边框 */
+      padding: 0;
+      /* 移除内边距 */
+      cursor: pointer;
+      /* 鼠标悬浮时显示手型 */
+    }
+
+    #records {
+      padding: auto;
+      color: white;
+      margin-top: 2vh;
+      margin-left: 5vw;
+      margin-right: auto;
+      font-size: 18px;
+      text-align: left;
+      display: inline-block;
+      max-height: 15vh;
+      /* 限制高度为视口的30% */
+      overflow-y: auto;
+      /* 垂直方向超出时显示滚动条 */
+      flex-grow: 1;
+      /* 允许记录区域扩展，但不超过限制 */
+    }
+
+    #records li {
+      
+      margin-bottom: 0.4em;
+    }
+
+    .delete-btn {
+      background-color: transparent;
+      /* 确保删除按钮也无背景 */
+      border: none;
+      /* 移除边框 */
+      padding: 0;
+      /* 无内边距 */
+    }
+
+    /* 自定义滚动条样式（可选） */
+    #records::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    #records::-webkit-scrollbar-thumb {
+      background-color: #555;
+      border-radius: 4px;
+    }
+
+    #records::-webkit-scrollbar-track {
+      background-color: #222;
+    }
+
+    @media (max-height: 667px) {
+      #btns {
+        margin-top: 0;
+      }
+
+      #counter {
+        margin-bottom: 0;
+      }
+
+      #records {
+        padding: 0;
+      }
+
+    }
+  </style>
+</head>
+
+<body>
+  <div id="counter" onclick="incrementCount()">0</div>
+  <div id="btns">
+    <button onclick="decrementCount()">
+      <img src="./square-minus-solid.svg" width="35" />
+    </button>
+    <button onclick="resetCount()">
+      <img src="./rectangle-xmark-solid.svg" width="40" />
+    </button>
+    <button onclick="saveRecord()">
+      <img src="./floppy-disk-solid.svg" width="35" />
+    </button>
+    <button onclick="clearAllRecords()">
+      <img src="./trash-solid.svg" width="30" />
+    </button>
+  </div>
+  <div id="records"></div>
+
+  <script>
+    let count = localStorage.getItem("studentCount")
+      ? parseInt(localStorage.getItem("studentCount"))
+      : 0;
+    let records = localStorage.getItem("countRecords")
+      ? JSON.parse(localStorage.getItem("countRecords"))
+      : [];
+    updateDisplay();
+    updateRecords();
+
+    function incrementCount() {
+      count += 1;
+      localStorage.setItem("studentCount", count);
+      updateDisplay();
+    }
+
+    function decrementCount() {
+      count -= 1;
+      if (count < 0) count = 0;
+      localStorage.setItem("studentCount", count);
+      updateDisplay();
+    }
+
+    function resetCount() {
+      if (confirm(`Are you sure to reset the counter"?`)) {
+        count = 0;
+        localStorage.setItem("studentCount", count);
+        updateDisplay();
+      }
+    }
+
+    function saveRecord() {
+      const now = new Date().toLocaleString("en", {
+        month: "2-digit",   // 月份，补零，如 03
+        day: "2-digit",     // 日期，补零，如 22
+        hour: "2-digit",    // 小时，补零，如 14
+        minute: "2-digit",  // 分钟，补零，如 05
+        hour12: false       // 使用 24 小时制，false 为 24 小时，true 为 12 小时
+      });
+      records.push({ time: now, count: count });
+      localStorage.setItem("countRecords", JSON.stringify(records));
+      updateRecords();
+    }
+
+    function deleteRecord(index) {
+      if (
+        confirm(
+          `Are you sure to delete "${records[index].time}: ${records[index].count} students"?`
+        )
+      ) {
+        records.splice(index, 1);
+        localStorage.setItem("countRecords", JSON.stringify(records));
+        updateRecords();
+      }
+    }
+
+    function clearAllRecords() {
+      if (records.length === 0) {
+        alert("No Record to delete!");
+        return;
+      }
+      if (confirm("Are you sure to delete all records?")) {
+        records = [];
+        localStorage.setItem("countRecords", JSON.stringify(records));
+        updateRecords();
+      }
+    }
+
+    function updateDisplay() {
+      document.getElementById("counter").innerText = count;
+    }
+
+    function updateRecords() {
+      const recordsDiv = document.getElementById("records");
+      if (records.length === 0) {
+        recordsDiv.innerHTML = "<p></p>";
+      } else {
+        recordsDiv.innerHTML =
+          "<ul>" +
+          records
+            .map(
+              (r, index) =>
+                `<li>${r.time}: <strong>${r.count}</strong> students <button class="delete-btn" onclick="deleteRecord(${index})"><img src="./delete-left-solid.svg" width="20"></button></li>`
+            )
+            .join("") +
+          "</ul>";
+      }
+    }
+  </script>
+  <script>
+    // Service Worker 注册
+    if ("serviceWorker" in navigator) {
+      console.log("counting helper: 注册 Service Worker 中...");
+      navigator.serviceWorker
+        .register("./service-worker.js")
+        .then((registration) => {
+          console.log("counting helper: Service Worker 已注册:", registration);
+          registration.addEventListener("updatefound", () => {
+            const newWorker = registration.installing;
+            newWorker.addEventListener("statechange", () => {
+              if (newWorker.state === "installed" && navigator.serviceWorker.controller) {
+                console.log("counting helper: 有新版本的 Service Worker 可用");
+                if (confirm("A new version DRIVER Helper is available. Refresh to update?")) {
+                  newWorker.postMessage({ action: "skipWaiting" });
+                }
+              }
+            });
+          });
+        })
+        .catch((err) => console.error("counting helper: Service Worker registration failed:", err));
+
+      navigator.serviceWorker.addEventListener("controllerchange", () => {
+        console.log("counting helper: 正在载入新版本的 Service Worker");
+        window.location.reload();
+      });
+
+      navigator.serviceWorker.addEventListener("message", (event) => {
+        if (event.data && event.data.action === "skipWaiting") {
+          console.log("counting helper: Skipping waiting via message");
+        }
+      });
+    }
+  </script>
+</body>
+
+</html>
