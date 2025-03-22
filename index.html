@@ -140,11 +140,20 @@
     updateDisplay();
     updateRecords();
 
-    function incrementCount() {
-      count += 1;
-      localStorage.setItem("studentCount", count);
-      updateDisplay();
-    }
+    let isProcessing = false;
+
+function incrementCount() {
+  if (isProcessing) return;
+  isProcessing = true;
+
+  count += 1;
+  localStorage.setItem("studentCount", count);
+  updateDisplay();
+
+  setTimeout(() => {
+    isProcessing = false;
+  }, 5); // 200ms 防抖间隔
+}
 
     function decrementCount() {
       count -= 1;
