@@ -51,25 +51,32 @@
     }
 
     #records {
-      padding: auto;
-      color: white;
-      margin-top: 2vh;
-      margin-left: 5vw;
-      margin-right: auto;
-      font-size: 18px;
-      text-align: left;
-      display: inline-block;
-      max-height: 15vh;
-      /* 限制高度为视口的30% */
+      
+     width: 100%;
       overflow-y: auto;
-      /* 垂直方向超出时显示滚动条 */
-      flex-grow: 1;
-      /* 允许记录区域扩展，但不超过限制 */
+      /* 纵向滚动 */
+      max-height: 15vh;
+      /* 最大高度 */
+      color: #000;
+      text-align: center; /* 添加此行 */
+      
+    }
+
+    #records ul {
+      list-style: none;
+      padding: 20px;
+      
     }
 
     #records li {
-      
-      margin-bottom: 0.4em;
+      display: flex;
+            justify-content: space-between;
+            
+            background-color: #bdbdbd;
+            padding: 10px;
+            margin-bottom: 5px;
+            border-radius: 5px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     }
 
     .delete-btn {
@@ -178,7 +185,7 @@ function incrementCount() {
         minute: "2-digit",  // 分钟，补零，如 05
         hour12: false       // 使用 24 小时制，false 为 24 小时，true 为 12 小时
       });
-      records.push({ time: now, count: count });
+      records.unshift({ time: now, count: count }); // 使用 unshift 将新记录添加到数组开头
       localStorage.setItem("countRecords", JSON.stringify(records));
       updateRecords();
     }
@@ -218,7 +225,7 @@ function incrementCount() {
       } else {
         recordsDiv.innerHTML =
           "<ul>" +
-          records
+          records 
             .map(
               (r, index) =>
                 `<li>${r.time}: <strong>${r.count}</strong> students <button class="delete-btn" onclick="deleteRecord(${index})"><img src="./delete-left-solid.svg" width="20"></button></li>`
@@ -231,17 +238,17 @@ function incrementCount() {
   <script>
     // Service Worker 注册
     if ("serviceWorker" in navigator) {
-      console.log("counting helper: 注册 Service Worker 中...");
+     
       navigator.serviceWorker
         .register("./service-worker.js")
         .then((registration) => {
-          console.log("counting helper: Service Worker 已注册:", registration);
+        
           registration.addEventListener("updatefound", () => {
             const newWorker = registration.installing;
             newWorker.addEventListener("statechange", () => {
               if (newWorker.state === "installed" && navigator.serviceWorker.controller) {
-                console.log("counting helper: 有新版本的 Service Worker 可用");
-                if (confirm("A new version DRIVER Helper is available. Refresh to update?")) {
+          
+                if (confirm("A new version counting Helper is available. Refresh to update?")) {
                   newWorker.postMessage({ action: "skipWaiting" });
                 }
               }
@@ -251,13 +258,13 @@ function incrementCount() {
         .catch((err) => console.error("counting helper: Service Worker registration failed:", err));
 
       navigator.serviceWorker.addEventListener("controllerchange", () => {
-        console.log("counting helper: 正在载入新版本的 Service Worker");
+       
         window.location.reload();
       });
 
       navigator.serviceWorker.addEventListener("message", (event) => {
         if (event.data && event.data.action === "skipWaiting") {
-          console.log("counting helper: Skipping waiting via message");
+         
         }
       });
     }
