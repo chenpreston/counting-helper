@@ -170,7 +170,7 @@ function incrementCount() {
     }
 
     function resetCount() {
-      if (confirm(`Are you sure to reset the counter"?`)) {
+      if (confirm(`Are you sure to reset the counter?`)) {
         count = 0;
         localStorage.setItem("studentCount", count);
         updateDisplay();
@@ -188,12 +188,15 @@ function incrementCount() {
       records.unshift({ time: now, count: count }); // 使用 unshift 将新记录添加到数组开头
       localStorage.setItem("countRecords", JSON.stringify(records));
       updateRecords();
+      count = 0; // 保存记录后将计数器归零
+      localStorage.setItem("studentCount", count);
+      updateDisplay();
     }
 
     function deleteRecord(index) {
       if (
         confirm(
-          `Are you sure to delete "${records[index].time}: ${records[index].count} students"?`
+          `Are you sure to delete ${records[index].time}: ${records[index].count} students?`
         )
       ) {
         records.splice(index, 1);
