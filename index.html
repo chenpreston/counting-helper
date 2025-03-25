@@ -5,22 +5,22 @@
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-LCDE1JNW2B"></script>
   <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag() {
-          dataLayer.push(arguments);
-      }
-      gtag("js", new Date());
-      gtag("config", "G-LCDE1JNW2B");
+    window.dataLayer = window.dataLayer || [];
+    function gtag() {
+      dataLayer.push(arguments);
+    }
+    gtag("js", new Date());
+    gtag("config", "G-LCDE1JNW2B");
   </script>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Counting Helper</title>
   <style>
     body {
       background-color: black;
       font-family: Arial, sans-serif;
       text-align: center;
-      padding: 0px;
+      padding: 0;
       margin: 0;
       /* 移除默认边距 */
       height: 100vh;
@@ -32,7 +32,7 @@
     #counter {
       margin-left: auto;
       margin-right: auto;
-      max-width: 400px;
+      
       color: white;
       font-size: 80vw;
       margin-top: 12vh;
@@ -61,32 +61,33 @@
     }
 
     #records {
-      
-     width: 100%;
+
+      width: 100%;
       overflow-y: auto;
       /* 纵向滚动 */
       max-height: 15vh;
       /* 最大高度 */
       color: #000;
-      text-align: center; /* 添加此行 */
-      
+      text-align: center;
+      /* 添加此行 */
+
     }
 
     #records ul {
       list-style: none;
-      padding: 20px;
-      
+      padding: 0.5em 0.5em;
+
     }
 
     #records li {
       display: flex;
-            justify-content: space-between;
-            
-            background-color: #bdbdbd;
-            padding: 10px;
-            margin-bottom: 5px;
-            border-radius: 5px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      justify-content: space-between;
+
+      background-color: #bdbdbd;
+      padding: 0.5em;
+      margin-bottom: 0.2em;
+      border-radius: 0.5em;
+      
     }
 
     .delete-btn {
@@ -100,12 +101,12 @@
 
     /* 自定义滚动条样式（可选） */
     #records::-webkit-scrollbar {
-      width: 8px;
+      width: 1em;
     }
 
     #records::-webkit-scrollbar-thumb {
       background-color: #555;
-      border-radius: 4px;
+      border-radius: 0.5em;
     }
 
     #records::-webkit-scrollbar-track {
@@ -126,6 +127,19 @@
       }
 
     }
+@media (min-height: 2000px) {
+      html {
+        font-size: 38px
+      }
+      img {
+        width: 5em;
+      }
+      #records {
+        max-height: 23vh;
+      }
+  
+}
+
   </style>
 </head>
 
@@ -159,18 +173,18 @@
 
     let isProcessing = false;
 
-function incrementCount() {
-  if (isProcessing) return;
-  isProcessing = true;
+    function incrementCount() {
+      if (isProcessing) return;
+      isProcessing = true;
 
-  count += 1;
-  localStorage.setItem("studentCount", count);
-  updateDisplay();
+      count += 1;
+      localStorage.setItem("studentCount", count);
+      updateDisplay();
 
-  setTimeout(() => {
-    isProcessing = false;
-  }, 5); // 200ms 防抖间隔
-}
+      setTimeout(() => {
+        isProcessing = false;
+      }, 5); // 200ms 防抖间隔
+    }
 
     function decrementCount() {
       count -= 1;
@@ -238,7 +252,7 @@ function incrementCount() {
       } else {
         recordsDiv.innerHTML =
           "<ul>" +
-          records 
+          records
             .map(
               (r, index) =>
                 `<li>${r.time}: <strong>${r.count}</strong> students <button class="delete-btn" onclick="deleteRecord(${index})"><img src="./delete-left-solid.svg" width="20"></button></li>`
@@ -251,16 +265,16 @@ function incrementCount() {
   <script>
     // Service Worker 注册
     if ("serviceWorker" in navigator) {
-     
+
       navigator.serviceWorker
         .register("./service-worker.js")
         .then((registration) => {
-        
+
           registration.addEventListener("updatefound", () => {
             const newWorker = registration.installing;
             newWorker.addEventListener("statechange", () => {
               if (newWorker.state === "installed" && navigator.serviceWorker.controller) {
-          
+
                 if (confirm("A new version counting Helper is available. Refresh to update?")) {
                   newWorker.postMessage({ action: "skipWaiting" });
                 }
@@ -271,13 +285,13 @@ function incrementCount() {
         .catch((err) => console.error("counting helper: Service Worker registration failed:", err));
 
       navigator.serviceWorker.addEventListener("controllerchange", () => {
-       
+
         window.location.reload();
       });
 
       navigator.serviceWorker.addEventListener("message", (event) => {
         if (event.data && event.data.action === "skipWaiting") {
-         
+
         }
       });
     }
